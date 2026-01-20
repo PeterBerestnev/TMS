@@ -85,6 +85,36 @@ docker run --rm \
   time-tracker
 ```
 
+#### Запуск контейнера в фоне (демон)
+
+Чтобы контейнер работал в фоне и не требовал открытого терминала, используй режим `-d` и имя контейнера:
+
+```bash
+mkdir -p data
+docker run -d \
+  -p 8000:8000 \
+  -v $(pwd)/data:/app/data \
+  -e DB_PATH=/app/data/time_tracker.sqlite3 \
+  --name time-tracker \
+  time-tracker
+```
+
+Полезные команды:
+
+```bash
+# Список работающих контейнеров
+docker ps
+
+# Остановить контейнер
+docker stop time-tracker
+
+# Запустить снова
+docker start time-tracker
+
+# Смотреть логи
+docker logs -f time-tracker
+```
+
 Затем открой в браузере:
 
 ```text
