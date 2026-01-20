@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Статистика</h3>
+
+<form method="get" action="/stats">
+    <div class="row">
+        <div class="column">
+            <label>Начало периода
+                <input type="date" name="start" value="{{ start }}">
+            </label>
+        </div>
+        <div class="column">
+            <label>Конец периода
+                <input type="date" name="end" value="{{ end }}">
+            </label>
+        </div>
+    </div>
+    <button type="submit">Показать</button>
+    <a class="button button-outline" href="/export/excel?start={{ start }}&end={{ end }}">Выгрузить в Excel</a>
+</form>
+
+<hr>
+
+<h4>Часы по категориям</h4>
+{% if per_category %}
+<table>
+    <thead>
+    <tr>
+        <th>Категория</th>
+        <th>Часы</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for name, hours in per_category %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>{{ "%.2f"|format(hours) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% else %}
+<p>Нет данных за выбранный период.</p>
+{% endif %}
+
+<h4>Часы по дням</h4>
+{% if per_day %}
+<table>
+    <thead>
+    <tr>
+        <th>Дата</th>
+        <th>Часы</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for d, hours in per_day %}
+        <tr>
+            <td>{{ d }}</td>
+            <td>{{ "%.2f"|format(hours) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% else %}
+<p>Нет дневных данных за период.</p>
+{% endif %}
+
+{% endblock %}
+

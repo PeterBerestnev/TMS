@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Трекер времени</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+<main class="container">
+    <header class="top-nav">
+        <h2>Трекер времени</h2>
+        <nav>
+            <a href="{{ url_for('index') }}">Журнал</a>
+            <a href="{{ url_for('calendar_view') }}">Календарь</a>
+            <a href="{{ url_for('stats_view') }}">Статистика</a>
+            <a href="{{ url_for('categories_page') }}">Категории</a>
+        </nav>
+    </header>
+
+    <section>
+        {% block content %}{% endblock %}
+    </section>
+</main>
+</body>
+</html>
+

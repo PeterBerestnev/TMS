@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Категории</h3>
+
+<h4>Новая категория</h4>
+<form method="post" action="/categories/add">
+    <div class="row">
+        <div class="column">
+            <label>Название
+                <input type="text" name="name" required>
+            </label>
+        </div>
+        <div class="column">
+            <label>Цвет
+                <input type="color" name="color" value="#1976d2">
+            </label>
+        </div>
+    </div>
+    <label>Описание
+        <textarea name="description" rows="2"></textarea>
+    </label>
+    <button type="submit">Добавить</button>
+</form>
+
+<hr>
+
+<h4>Список категорий</h4>
+
+{% if categories %}
+<table>
+    <thead>
+    <tr>
+        <th>Цвет</th>
+        <th>Название</th>
+        <th>Описание</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for c in categories %}
+        <tr>
+            <td>
+                {% if c.color %}
+                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:{{ c.color }};"></span>
+                {% endif %}
+            </td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.description or "" }}</td>
+            <td>
+                <form method="post" action="/categories/{{ c.id }}/delete" style="margin:0;">
+                    <button type="submit" class="button button-outline">Удалить</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% else %}
+<p>Категорий пока нет.</p>
+{% endif %}
+
+{% endblock %}
+

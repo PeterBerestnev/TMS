@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Календарь за {{ month }}.{{ year }}</h3>
+
+<form method="get" action="/calendar">
+    <div class="row">
+        <div class="column">
+            <label>Месяц
+                <input type="number" name="month" min="1" max="12" value="{{ month }}">
+            </label>
+        </div>
+        <div class="column">
+            <label>Год
+                <input type="number" name="year" value="{{ year }}">
+            </label>
+        </div>
+    </div>
+    <button type="submit">Показать</button>
+</form>
+
+<hr>
+
+<div class="calendar-grid">
+    {% for d in days %}
+        <div class="calendar-cell{% if totals_map.get(d) %} has-data{% endif %}">
+            <div class="calendar-date">
+                <a href="/?day={{ d }}">{{ d.day }}</a>
+            </div>
+            <div class="calendar-hours">
+                {% if totals_map.get(d) %}
+                    {{ "%.1f"|format(totals_map.get(d)) }} ч
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
