@@ -70,7 +70,18 @@ docker build -t time-tracker .
 ```bash
 docker run --rm \
   -p 8000:8000 \
-  -v $(pwd)/time_tracker.sqlite3:/app/time_tracker.sqlite3 \
+  -v $(pwd)/data:/app/data \
+  -e DB_PATH=/app/data/time_tracker.sqlite3 \
+  time-tracker
+```
+
+Или если файл БД уже существует в корне проекта:
+
+```bash
+docker run --rm \
+  -p 8000:8000 \
+  -v $(pwd):/app/data \
+  -e DB_PATH=/app/data/time_tracker.sqlite3 \
   time-tracker
 ```
 
