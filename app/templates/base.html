@@ -6,24 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-<main class="container">
-    <header class="top-nav">
-        <h2>Трекер времени</h2>
-        <nav>
-            <a href="{{ url_for('index') }}">Журнал</a>
-            <a href="{{ url_for('calendar_view') }}">Календарь</a>
-            <a href="{{ url_for('stats_view') }}">Статистика</a>
-            <a href="{{ url_for('categories_page') }}">Категории</a>
+<body class="layout">
+<div class="layout-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="sidebar-logo">TM</span>
+            <span class="sidebar-title">Трекер времени</span>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('index') }}">
+                <i class="fas fa-book"></i>
+                <span class="menu-text">Журнал</span>
+            </a>
+            <a href="{{ url_for('calendar_view') }}">
+                <i class="fas fa-calendar"></i>
+                <span class="menu-text">Календарь</span>
+            </a>
+            <a href="{{ url_for('stats_view') }}">
+                <i class="fas fa-chart-bar"></i>
+                <span class="menu-text">Статистика</span>
+            </a>
+            <a href="{{ url_for('categories_page') }}">
+                <i class="fas fa-tags"></i>
+                <span class="menu-text">Категории</span>
+            </a>
         </nav>
-    </header>
+    </aside>
 
-    <section>
-        {% block content %}{% endblock %}
-    </section>
-</main>
+    <div class="layout-main">
+        <header class="top-nav">
+            <button class="sidebar-toggle" type="button" aria-label="Переключить меню" onclick="document.body.classList.toggle('sidebar-collapsed')">
+                ☰
+            </button>
+            <h2>Трекер времени</h2>
+        </header>
+
+        <main class="container">
+            <section>
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+</div>
+<script>
+    // Подсветка активного пункта меню
+    (function() {
+        const currentPath = window.location.pathname;
+        const menuLinks = document.querySelectorAll('.sidebar-menu a');
+        menuLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+            if (currentPath === linkPath || (currentPath === '/' && linkPath === '/')) {
+                link.classList.add('active');
+            }
+        });
+    })();
+</script>
 </body>
 </html>
 

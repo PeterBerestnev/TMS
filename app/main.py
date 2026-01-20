@@ -209,6 +209,9 @@ async def stats_view(
         .all()
     )
 
+    cat_labels = [name for name, _ in per_category]
+    cat_values = [float(hours or 0) for _, hours in per_category]
+
     per_day = (
         db.execute(
             select(TimeEntry.date, func.sum(TimeEntry.duration_hours))
@@ -219,6 +222,9 @@ async def stats_view(
         .all()
     )
 
+    day_labels = [d.isoformat() for d, _ in per_day]
+    day_values = [float(hours or 0) for _, hours in per_day]
+
     return templates.TemplateResponse(
         "stats.html",
         {
@@ -227,6 +233,10 @@ async def stats_view(
             "end": end,
             "per_category": per_category,
             "per_day": per_day,
+            "cat_labels": cat_labels,
+            "cat_values": cat_values,
+            "day_labels": day_labels,
+            "day_values": day_values,
         },
     )
 

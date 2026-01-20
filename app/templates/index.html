@@ -1,91 +1,107 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Журнал на день {{ day }}</h3>
+<div class="content-header-title">
+    <h3>Журнал на день {{ day }}</h3>
+</div>
 
-<form method="get" action="/">
-    <label>Дата:
-        <input type="date" name="day" value="{{ day }}">
-    </label>
-    <button type="submit">Открыть день</button>
-</form>
-
-<hr>
-
-<h4>Новая запись</h4>
-<form method="post" action="/entries/add">
-    <input type="hidden" name="date_value" value="{{ day }}">
-    <div class="row">
-        <div class="column">
-            <label>Категория
-                <select name="category_id" required>
-                    <option value="">Выберите категорию</option>
-                    {% for c in categories %}
-                        <option value="{{ c.id }}">{{ c.name }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-        </div>
-        <div class="column">
-            <label>Часы
-                <input type="number" step="0.25" min="0" name="duration_hours" value="1">
-            </label>
-        </div>
+<div class="card card-primary">
+    <div class="card-header">
+        <span>Дата</span>
     </div>
-    <div class="row">
-        <div class="column">
-            <label>Время начала
-                <input type="time" name="start_time_str">
+    <div class="card-body">
+        <form method="get" action="/">
+            <label>Дата:
+                <input type="date" name="day" value="{{ day }}">
             </label>
-        </div>
-        <div class="column">
-            <label>Время окончания
-                <input type="time" name="end_time_str">
-            </label>
-        </div>
+            <button type="submit">Открыть день</button>
+        </form>
     </div>
-    <label>Комментарий
-        <textarea name="comment" rows="2"></textarea>
-    </label>
-    <button type="submit">Добавить</button>
-</form>
+</div>
 
-<hr>
+<div class="card">
+    <div class="card-header">
+        <span>Новая запись</span>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/entries/add">
+            <input type="hidden" name="date_value" value="{{ day }}">
+            <div class="row">
+                <div class="column">
+                    <label>Категория
+                        <select name="category_id" required>
+                            <option value="">Выберите категорию</option>
+                            {% for c in categories %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+                <div class="column">
+                    <label>Часы
+                        <input type="number" step="0.25" min="0" name="duration_hours" value="1">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <label>Время начала
+                        <input type="time" name="start_time_str">
+                    </label>
+                </div>
+                <div class="column">
+                    <label>Время окончания
+                        <input type="time" name="end_time_str">
+                    </label>
+                </div>
+            </div>
+            <label>Комментарий
+                <textarea name="comment" rows="2"></textarea>
+            </label>
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+</div>
 
-<h4>Записи за день</h4>
-
-{% if entries %}
-<table>
-    <thead>
-    <tr>
-        <th>Категория</th>
-        <th>Часы</th>
-        <th>Комментарий</th>
-        <th>Начало</th>
-        <th>Конец</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for e in entries %}
-        <tr>
-            <td>{{ e.category.name }}</td>
-            <td>{{ "%.2f"|format(e.duration_hours) }}</td>
-            <td>{{ e.comment or "" }}</td>
-            <td>{% if e.start_time %}{{ e.start_time.strftime("%H:%M") }}{% endif %}</td>
-            <td>{% if e.end_time %}{{ e.end_time.strftime("%H:%M") }}{% endif %}</td>
-            <td>
-                <form method="post" action="/entries/{{ e.id }}/delete" style="margin:0;">
-                    <button type="submit" class="button button-outline">Удалить</button>
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>Пока нет записей за этот день.</p>
-{% endif %}
+<div class="card">
+    <div class="card-header">
+        <span>Записи за день</span>
+    </div>
+    <div class="card-body">
+        {% if entries %}
+        <table>
+            <thead>
+            <tr>
+                <th>Категория</th>
+                <th>Часы</th>
+                <th>Комментарий</th>
+                <th>Начало</th>
+                <th>Конец</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for e in entries %}
+                <tr>
+                    <td>{{ e.category.name }}</td>
+                    <td>{{ "%.2f"|format(e.duration_hours) }}</td>
+                    <td>{{ e.comment or "" }}</td>
+                    <td>{% if e.start_time %}{{ e.start_time.strftime("%H:%M") }}{% endif %}</td>
+                    <td>{% if e.end_time %}{{ e.end_time.strftime("%H:%M") }}{% endif %}</td>
+                    <td>
+                        <form method="post" action="/entries/{{ e.id }}/delete" style="margin:0;">
+                            <button type="submit" class="button button-outline">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Пока нет записей за этот день.</p>
+        {% endif %}
+    </div>
+</div>
 
 {% endblock %}
 

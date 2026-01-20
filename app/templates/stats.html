@@ -1,69 +1,179 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Статистика</h3>
+<div class="content-header-title">
+    <h3>Статистика</h3>
+</div>
 
-<form method="get" action="/stats">
-    <div class="row">
-        <div class="column">
-            <label>Начало периода
-                <input type="date" name="start" value="{{ start }}">
-            </label>
-        </div>
-        <div class="column">
-            <label>Конец периода
-                <input type="date" name="end" value="{{ end }}">
-            </label>
+<div class="card card-primary">
+    <div class="card-header">
+        <span>Период</span>
+    </div>
+    <div class="card-body">
+        <form method="get" action="/stats">
+            <div class="row">
+                <div class="column">
+                    <label>Начало периода
+                        <input type="date" name="start" value="{{ start }}">
+                    </label>
+                </div>
+                <div class="column">
+                    <label>Конец периода
+                        <input type="date" name="end" value="{{ end }}">
+                    </label>
+                </div>
+            </div>
+            <button type="submit">Показать</button>
+            <a class="button button-outline" href="/export/excel?start={{ start }}&end={{ end }}">Выгрузить в Excel</a>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span>Графики</span>
+    </div>
+    <div class="card-body">
+        <div class="stats-charts">
+            <div>
+                <h4>Часы по категориям</h4>
+                {% if per_category %}
+                    <canvas id="categoryChart" height="220"></canvas>
+                {% else %}
+                    <p>Нет данных за выбранный период.</p>
+                {% endif %}
+            </div>
+            <div>
+                <h4>Часы по дням</h4>
+                {% if per_day %}
+                    <canvas id="dayChart" height="220"></canvas>
+                {% else %}
+                    <p>Нет дневных данных за период.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
-    <button type="submit">Показать</button>
-    <a class="button button-outline" href="/export/excel?start={{ start }}&end={{ end }}">Выгрузить в Excel</a>
-</form>
+</div>
 
-<hr>
+<div class="card">
+    <div class="card-header">
+        <span>Табличное представление</span>
+    </div>
+    <div class="card-body">
+        <h5>Часы по категориям</h5>
+        {% if per_category %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Категория</th>
+                    <th>Часы</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for name, hours in per_category %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ "%.2f"|format(hours) }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Нет данных за выбранный период.</p>
+        {% endif %}
 
-<h4>Часы по категориям</h4>
-{% if per_category %}
-<table>
-    <thead>
-    <tr>
-        <th>Категория</th>
-        <th>Часы</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for name, hours in per_category %}
-        <tr>
-            <td>{{ name }}</td>
-            <td>{{ "%.2f"|format(hours) }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-{% else %}
-<p>Нет данных за выбранный период.</p>
-{% endif %}
+        <h5>Часы по дням</h5>
+        {% if per_day %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Часы</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for d, hours in per_day %}
+                    <tr>
+                        <td>{{ d }}</td>
+                        <td>{{ "%.2f"|format(hours) }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Нет дневных данных за период.</p>
+        {% endif %}
+    </div>
+</div>
 
-<h4>Часы по дням</h4>
-{% if per_day %}
-<table>
-    <thead>
-    <tr>
-        <th>Дата</th>
-        <th>Часы</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for d, hours in per_day %}
-        <tr>
-            <td>{{ d }}</td>
-            <td>{{ "%.2f"|format(hours) }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-{% else %}
-<p>Нет дневных данных за период.</p>
+{% if per_category or per_day %}
+<script>
+    (function () {
+        const catLabels = {{ cat_labels|tojson }};
+        const catValues = {{ cat_values|tojson }};
+        const dayLabels = {{ day_labels|tojson }};
+        const dayValues = {{ day_values|tojson }};
+
+        if (catLabels.length && document.getElementById('categoryChart')) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        label: 'Часы',
+                        data: catValues,
+                        backgroundColor: '#e040fb',
+                        borderRadius: 6,
+                        maxBarThickness: 60
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (dayLabels.length && document.getElementById('dayChart')) {
+            const ctx2 = document.getElementById('dayChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Часы в день',
+                        data: dayValues,
+                        borderColor: '#7c4dff',
+                        backgroundColor: 'rgba(124,77,255,0.12)',
+                        borderWidth: 2,
+                        tension: 0.25,
+                        fill: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+    })();
+</script>
 {% endif %}
 
 {% endblock %}
